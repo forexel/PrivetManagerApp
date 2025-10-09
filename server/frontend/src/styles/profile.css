@@ -1,0 +1,180 @@
+/* Контейнер страницы */
+.profile {
+  max-width: var(--content-max);
+  margin: 0 auto;
+}
+
+/* Хедер с аватаром/именем */
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 0 8px; /* верх подгоняем контейнером страницы */
+}
+
+.profile-avatar {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.profile-avatar img {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+}
+
+.profile-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.profile-email {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* Список карточек */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.info-item {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+}
+
+.info-item .text {
+  min-width: 0;
+}
+
+.info-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-dark);
+}
+
+.info-subtitle {
+  margin-top: 2px;
+  font-size: 11px;
+  color: #9ca3af;
+  word-break: break-word;
+}
+
+.info-edit {
+  margin-left: 12px;
+  border: 0;
+  background: transparent;
+  padding: 6px;
+  border-radius: 8px;
+  cursor: pointer;
+  flex: 0 0 auto;              /* не сжимать в узких контейнерах */
+}
+
+.info-edit img {
+  width: 16px;
+  height: 16px;
+}
+
+/* Кнопки под списком */
+.profile-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-primary.profile-logout {
+  width: 220px;
+  height: 36px;
+  border-radius: 9999px;
+}
+
+/* Добавим нижний зазор, чтобы кнопки/ссылка удаления не прятались за меню; уменьшили отступ */
+.dashboard.profile {
+  /* 4px от верхней «чёлки» до аватара */
+  padding-top: calc(env(safe-area-inset-top) + 4px) !important;
+  padding-bottom: calc(8px + var(--nav-h) + env(safe-area-inset-bottom));
+}
+
+/* Ссылка «Удалить аккаунт» */
+.profile-danger {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.pencil-icon {
+  width: 16px;
+  height: 16px;
+  fill: #3E8BBF;
+  stroke: #3E8BBF;
+}
+
+.info-edit svg,
+.info-edit svg * {
+  fill: #3E8BBF;
+  stroke: #3E8BBF;
+}
+
+/* Круглые цветные кнопки подтверждения/отмены */
+.info-edit.icon-round {
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 28px;              /* фиксированная ширина = высоте */
+  min-width: 28px;             /* защита от сжатия в grid/flex */
+  aspect-ratio: 1 / 1;         /* круглая форма на всех разрешениях */
+  box-sizing: border-box;
+  overflow: hidden;            /* отсекаем артефакты скругления */
+}
+.info-edit.icon-round.accept { background: rgba(16, 185, 129, 0.15); }
+.info-edit.icon-round.cancel { background: rgba(239, 68, 68, 0.15); }
+
+/* Окраска иконок поверх синих дефолтных правил */
+.info-edit.icon-round.accept svg,
+.info-edit.icon-round.accept svg *{
+  fill: #10B981 !important;
+  stroke: #10B981 !important;
+}
+.info-edit.icon-round.cancel svg,
+.info-edit.icon-round.cancel svg *{
+  fill: #EF4444 !important;
+  stroke: #EF4444 !important;
+}
+
+/* Цвета для иконок подтверждения/отмены при редактировании */
+.info-edit .icon-accept,
+.info-edit .icon-accept *{
+  width: 16px;
+  height: 16px;
+  fill: #10B981 !important;   /* зелёный */
+  stroke: #10B981 !important;
+}
+
+.info-edit .icon-cancel,
+.info-edit .icon-cancel *{
+  width: 16px;
+  height: 16px;
+  fill: #EF4444 !important;   /* красный */
+  stroke: #EF4444 !important;
+}

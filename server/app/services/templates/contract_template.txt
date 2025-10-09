@@ -1,0 +1,21 @@
+ДОГОВОР № {contract_number}
+
+1. Стороны и предмет договора
+   Исполнитель обязуется оказать услуги по обслуживанию техники Клиента.
+   Клиент: {client_full_name}
+   Паспортные данные: серия {passport_series}, номер {passport_number}, дата выдачи {passport_issue_date}, код {passport_issue_code}
+   Кем выдан: {passport_issued_by}
+   Адрес регистрации: {passport_registration_address}
+
+2. Перечень техники
+{devices_block}
+{devices_specs_block}
+
+3. Тарифные условия
+   Количество устройств: {tariff_device_count}
+   Доплата за устройство: {tariff_extra_per_device} ₽
+   Итоговая доплата: {tariff_total_extra_fee} ₽
+
+4. Подписи сторон
+   Мастер: ________________________
+   Клиент: ________________________

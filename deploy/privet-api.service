@@ -1,0 +1,17 @@
+
+
+[Unit]
+Description=PrivetSuperApp API (Uvicorn)
+After=network.target
+
+[Service]
+User=www-data
+WorkingDirectory=/opt/privet-api
+Environment="PYTHONDONTWRITEBYTECODE=1"
+Environment="PYTHONUNBUFFERED=1"
+EnvironmentFile=/opt/privet-api/.env
+ExecStart=/opt/privet-api/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8000
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
