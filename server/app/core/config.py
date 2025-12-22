@@ -4,15 +4,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     DATABASE_URL: AnyUrl = "postgresql+psycopg://privet:privet@localhost:5432/privetdb"
     JWT_SECRET: str = "change_me"
-    MASTER_JWT_SECRET: str = "change_master"
+    MANAGER_JWT_SECRET: str = "change_manager"
     S3_ENDPOINT: str = "http://localhost:9000"
-    S3_ACCESS_KEY: str = "minio"
-    S3_SECRET_KEY: str = "minio123"
+    S3_ACCESS_KEY: str = "minioadmin"
+    S3_SECRET_KEY: str = "minioadmin"
     S3_BUCKET: str = "privet-bucket"
     # Token lifetimes (can be overridden via .env)
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
-    MASTER_ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
+    MANAGER_ACCESS_TOKEN_EXPIRE_MINUTES: int = 120
 
     # SMTP settings (optional). If not provided, email sending is disabled.
     SMTP_HOST: str | None = None
@@ -29,6 +29,7 @@ class Settings(BaseSettings):
     # App meta
     APP_VERSION: str | None = None
     APP_CHANNEL: str | None = None  # web | pwa | apk | ipa
+    CONTRACT_SIGNATURE_SECRET: str = "change_me_signature"
 
     model_config = SettingsConfigDict(
         env_file=".env",

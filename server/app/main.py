@@ -18,14 +18,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse, FileResponse, Response
 from fastapi.staticfiles import StaticFiles
-from app.master_api import router as master_router
+from app.manager_api import router as manager_router
 
-app = FastAPI(title="PrivetSuperApp")
+app = FastAPI(title="PrivetSuperApp", docs_url="/docs", redoc_url="/redoc")
 
 # (CORS и прочее как есть)
 
-# Подключаем мастер-контур
-app.include_router(master_router)
+# Подключаем менеджер-контур
+app.include_router(manager_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,7 +37,7 @@ app.add_middleware(
 
 # --- Paths ---
 BASE_DIR = Path(__file__).resolve().parents[1]
-DIST_DIR = BASE_DIR / "frontend-master" / "dist"
+DIST_DIR = BASE_DIR / "frontend-manager" / "dist"
 ASSETS_DIR = DIST_DIR / "assets"
 
 # ассеты Vite по корню

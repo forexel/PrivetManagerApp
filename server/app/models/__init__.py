@@ -1,11 +1,9 @@
-# /Users/d.yudin/PrivetSuperApp/server/app/models/__init__.py
-"""Aggregate model imports so Alembic sees them in Base.metadata."""
+"""Central models package.
+Expose SQLAlchemy Base without importing subpackages at runtime to avoid circular imports.
+"""
+from .base import Base
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:  # pragma: no cover
+    from app.manager_api.models import ManagerUser  # noqa: F401
 
-# Сигнатура метаданных для Alembic. Импортируем только используемые модели.
-
-from .users import User  # noqa: F401
-from .devices import Device, DevicePhoto  # noqa: F401
-from app.master_api.models import MasterUser  # noqa: F401
-from app.models.support import SupportTicket, SupportMessage  # noqa: F401
-
-__all__ = ["User", "Device", "DevicePhoto", "MasterUser", "SupportTicket", "SupportMessage"]
+__all__ = ["Base"]

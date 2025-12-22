@@ -1,7 +1,7 @@
 """create master_users table
 
 Revision ID: 20241005_01
-Revises: 8a1b2c3d4e5f_noop_bridge
+Revises: 865cbc827c40
 Create Date: 2024-10-05
 """
 
@@ -13,7 +13,7 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "20241005_01"
-down_revision = "8a1b2c3d4e5f_noop_bridge"
+down_revision = "865cbc827c40"
 branch_labels = None
 depends_on = None
 

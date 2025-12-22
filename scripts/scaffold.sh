@@ -14,8 +14,8 @@ cat > .env.example << 'EOF'
 DATABASE_URL=postgresql+psycopg://privet:privet@localhost:5432/privetdb
 JWT_SECRET=change_me
 S3_ENDPOINT=http://localhost:9000
-S3_ACCESS_KEY=minio
-S3_SECRET_KEY=minio123
+S3_ACCESS_KEY=minioadmin
+S3_SECRET_KEY=minioadmin
 S3_BUCKET=privet-bucket
 
 # ===== Frontend =====
@@ -40,8 +40,8 @@ services:
     image: minio/minio
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: minio
-      MINIO_ROOT_PASSWORD: minio123
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -143,8 +143,8 @@ class Settings(BaseSettings):
     DATABASE_URL: AnyUrl = "postgresql+psycopg://privet:privet@localhost:5432/privetdb"
     JWT_SECRET: str = "change_me"
     S3_ENDPOINT: str = "http://localhost:9000"
-    S3_ACCESS_KEY: str = "minio"
-    S3_SECRET_KEY: str = "minio123"
+    S3_ACCESS_KEY: str = "minioadmin"
+    S3_SECRET_KEY: str = "minioadmin"
     S3_BUCKET: str = "privet-bucket"
 
     class Config:

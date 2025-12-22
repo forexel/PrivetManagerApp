@@ -1,0 +1,860 @@
+/* --- Select, styled like input --- */
+.select-like-input{ position: relative; display: block; }
+.select-like-input select{
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 36px 10px 12px;
+  font-size: 14px;
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  box-sizing: border-box;
+}
+.select-like-input::after{
+  content: '';
+  position: absolute;
+  right: 12px; top: 50%; transform: translateY(-50%);
+  width: 12px; height: 12px; pointer-events: none; opacity: .6;
+  background: no-repeat center / contain url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9' fill='none' stroke='%23111827' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* --- Device photos (max 2) --- */
+.device-photos{
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+.device-photo{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border: 1px solid #9ca3af;
+  border-radius: 12px;
+  background: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.device-photo__img{ width: 100%; height: 100%; object-fit: cover; }
+.device-photo--add{
+  border: 1px dashed rgba(17,24,39,0.25);
+  color: #6b7280;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.device-photo__plus{ width: 22px; height: 22px; opacity: .9; }
+.device-photo__file{ display: none; }
+.device-photo__remove{
+  position: absolute; top: 6px; right: 6px; z-index: 2;
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.15); background: #fff; color: #111827;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 18px; line-height: 1; text-align: center; cursor: pointer; opacity: .9;
+}
+.device-photo__remove:active{ transform: translateY(1px); }
+html, body, #root { 
+  height: 100%; 
+  background: #fff;
+}
+body { 
+  margin: 0;    
+  min-height: 100dvh; 
+  overflow-x: hidden; 
+  overflow-y: hidden; 
+  padding-top: env(safe-area-inset-top);
+}          /* вместо 100vh — корректно на мобилках */
+
+/* Покрас статуса/системной панели под брендовый цвет */
+body::before{
+  content: '';
+  position: fixed;
+  left: 0; right: 0; top: 0;
+  height: env(safe-area-inset-top);
+  background: var(--auth-bg, #3E8BBF);
+  z-index: 2000; /* над контентом, ниже плавающих кнопок */
+  pointer-events: none;
+}
+
+body{
+  display: block;       /* было display:flex — мешало */
+  place-items: initial; /* отключаем центровку body */
+}
+
+.app {
+  min-height: 100%;
+  background: #fff;               /* на всякий случай дубль */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Контент, чтобы не уезжал под нижнее фикс-меню */
+.app-content{
+  flex: 1 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom) + var(--vvb, 0px));
+  background: #fff;  /* важно: чтобы под меню не виднелся .page-blue */
+  /* фиксируем высоту области контента = высоте окна минус нижнее меню,
+     чтобы внутренние страницы прокручивались при переполнении и не уезжали под меню */
+  height: calc(100dvh - var(--nav-h) - env(safe-area-inset-bottom) - var(--vvb, 0px));
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+/* Если внутри пустой экран (.empty-state) — отключаем прокрутку контейнера, чтобы не «подпрыгивал» */
+.app-content:has(.empty-state){
+  overflow-y: hidden;
+}
+
+/* Без нижнего меню: используем всю высоту и убираем подложку */
+.app--no-nav .app-content{
+  padding-bottom: env(safe-area-inset-bottom);
+  height: 100dvh;
+}
+.app--no-nav::after{ display: none; }
+
+:root{
+  --auth-bg: #3E8BBF;   /* твой новый фон */
+  --accent:  #62B7FF;
+  --text-dark: #111827;
+  --text-light: #ffffff;
+  --border: #e5e7eb;
+  --content-max: 320px; 
+  --nav-h: 48px;   
+  --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+}
+
+.page-blue{
+  min-height: 100dvh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: calc(env(safe-area-inset-top) + 16px) 20px calc(env(safe-area-inset-bottom) + var(--vvb, 0px) + 16px);
+  background: var(--auth-bg);
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* большой белый заголовок наверху */
+.auth-hero-title{
+  margin:0 0 12px 0;        /* ещё компактнее */
+  font-size: 34px;          /* чуть меньше, чтобы всё влезало */
+  font-weight:700;
+  line-height:1.2;
+  color: var(--text-light);
+  text-align:center;
+}
+
+/* белая «карточка» формы */
+.card.auth-card{
+  width:100%;
+  max-width:320px;          /* «мобильная» ширина */
+  background:#ffffff;
+  border-radius:24px;
+  box-shadow:0 18px 40px rgba(0,0,0,.15);
+  padding:16px 12px;        /* ещё компактнее */
+  margin: 4px 6px 0;        /* подняли карточку ближе к заголовку */
+  box-sizing:border-box;
+}
+
+/* голубой заголовок внутри карточки */
+.card-title{
+  margin:0 0 12px 0;
+  font-size:20px;
+  font-weight:700;
+  color: var(--accent);
+  text-align:center;
+}
+
+/* 390–393px (iPhone 12/13/14) — растягиваем колонку */
+@media (min-width: 390px){ :root{ --content-max: 390px; } }
+@media (min-width: 414px){ :root{ --content-max: 414px; } }
+@media (min-width: 430px){ :root{ --content-max: 430px; } }
+
+/* чтобы на браузерах с svh работало идеально */
+@supports (height: 100svh){
+    .app-content{
+      min-height: calc(100svh - var(--nav-h) - env(safe-area-inset-bottom));}
+    body{ min-height: 100svh; }
+    .page-blue{ min-height: 100svh; }
+}
+
+
+/* у карточки небольшой нижний «зазор», чтоб не прилипала к краю */
+.card.auth-card{
+  margin-bottom: 24px;   /* добавить к твоим существующим свойствам */
+}
+
+.app::after{
+  display: none;
+}
+
+.app-content > *:last-child{ margin-bottom: 0 !important; }
+.page-blue   > *:last-child{ margin-bottom: 0 !important; }
+
+html, body, input, textarea, button, select {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  font-stretch: normal;   /* страховка от «узкого» начертания */
+  letter-spacing: normal;
+  font-kerning: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app-content > .page-white,
+.app-content > .page-blue,
+.app-content > .dashboard {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;  /* чтобы flex не сжимал/не давал минималки */
+}
+
+@supports (height: 100dvh) {
+  html, body { min-height: 100dvh; }
+}
+
+/* --- Client Detail: Step 1 (card on blue, key-value rows) --- */
+.client-step h2{
+  margin: 12px 0 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-dark);
+  text-transform: capitalize;
+}
+
+.step-card{
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0,0,0,.08);
+  padding: 8px 12px;
+}
+
+.kv{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+.kv__row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 4px; border-bottom:1px solid var(--border); }
+.kv__row:last-child{ border-bottom:none; }
+.kv__label{
+  flex:0 0 auto;
+  min-width:110px;
+  color:#9E9E9E;
+  font-size:15px;
+  font-weight:200;
+  text-transform:capitalize;
+}
+.kv__value{
+  flex:1 1 auto;
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  font-size:12px;
+}
+
+/* inline input visually compact */
+.input--inline{
+  height: 25px;                 /* требуемая высота */
+  width: 100%;                  /* растягиваемся по второй строке */
+  max-width: none;
+  margin: 0;
+  border-radius: 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);  /* вернуть прежнюю рамку */
+  outline: none;                    /* убрать жирную чёрную обводку */
+}
+.input--inline:focus,
+.input--inline:focus-visible{
+  outline: none;                    /* без системной обводки */
+  box-shadow: none;                 /* без синей подсветки в некоторых браузерах */
+  border-color: var(--border);      /* оставить как было */
+}
+textarea.input--inline{ width: 100%; min-height: 72px; border: 1px solid var(--border); outline: none; }
+textarea.input--inline:focus,
+textarea.input--inline:focus-visible{ outline: none; box-shadow: none; border-color: var(--border); }
+
+.icon-btn{ display:inline-flex; align-items:center; justify-content:center; width:32px; height:32px; border-radius:8px; border:1px solid var(--border); background:#fff; cursor:pointer; }
+.icon-btn .icon{ width:18px; height:18px; fill:#6b7280; }
+.icon-btn:active{ transform: translateY(1px); }
+
+.step-actions{ display:flex; justify-content:center; padding-top:6px; }
+.step-actions .btn{ width:100%; max-width:320px; }
+
+/* Card spacing within blue layout */
+.client-detail .client-step .step-card{ margin: 8px 0 12px; }
+
+/* --- Step modal (blue background mock) --- */
+.step-wrapper{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.step-modal{
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  border-radius: 22px;
+  padding: 16px;
+  box-sizing: border-box;
+  box-shadow: 0 18px 36px rgba(0,0,0,.14);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 56px);
+}
+
+.step-modal__header{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.step-modal__title{
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #73BCF1;  /* брендовый заголовок */
+  text-transform: capitalize;
+}
+.step-modal__title--center {
+  text-align: center;
+  width: 100%;
+}
+
+.step-modal__close{
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  background: #3E8BBF;
+  color: #fff;
+  font-size: 21px;
+  line-height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
+.step-modal__body{
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.info-list--step{
+  margin: 0;
+  padding: 0;
+  list-style: none; /* убираем зелёный отступ слева у UL */
+  gap: 0;
+}
+.info-item--step{
+  border: 0;
+  padding: 12px 0;
+  display: grid;
+  grid-template-columns: minmax(120px, auto) 1fr;
+  grid-template-rows: minmax(24px, auto) auto;
+  column-gap: 12px;
+  row-gap: 6px;
+  align-items: center;
+  background: transparent;
+}
+.info-item--step + .info-item--step{ border-top: 1px solid var(--border); }
+
+.info-item--step .user-data__label{ grid-column: 1; grid-row: 1; align-self: center; font-weight: 600; color: var(--text-dark); }
+.info-item--step .info-actions{
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.info-item--step .user-data__value,
+.info-item--step .input--inline,
+.info-item--step .input--passport{
+  grid-column: 1 / 3;
+  grid-row: 2;
+}
+
+.info-actions .btn-save,
+.info-actions .btn-cancel{ display: none; }
+.info-item--step.is-editing .info-edit--step{ display: none; }
+.info-item--step.is-editing .btn-save,
+.info-item--step.is-editing .btn-cancel{ display: inline-flex; }
+
+.info-actions .icon-btn{ width: 28px; height: 28px; border-radius: 8px; }
+
+.info-item__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  margin-bottom:6px;
+}
+
+.info-item__controls{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.info-edit--step{
+  padding:4px;
+  border:1px solid transparent;
+  border-radius:6px;
+  background:transparent;
+  color:#3E8BBF;
+}
+.icon-btn__icon{ width:16px; height:16px; }
+
+.step-modal__footer{
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+  margin-top: auto;
+}
+.btn{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 9999px;
+  padding: 0 16px;
+  height: 36px;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .12s ease, box-shadow .2s ease;
+  background: #e5e7eb;
+  color: var(--text-dark);
+}
+
+.btn-primary{
+  background: #111827;
+  color: #fff;
+}
+
+.btn-secondary{
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn-link{
+  background: transparent;
+  color: #6b7280;
+}
+
+.btn:active{
+  transform: translateY(1px);
+}
+
+.form .btn{
+  width: 90%;
+  margin: 12px auto 0;
+}
+
+.step-modal__footer .btn{ flex: 1 1 0; }
+.btn-blue {
+  background: #74BCF1; /* новый голубой для кнопок */
+  color: #0b0c10;
+  font-weight: 700;
+  font-size: 17px;       /* +2 пункта */
+  border-radius: 9999px;
+  padding: 10px 0;
+  border: none;
+  cursor: pointer;
+}
+
+.user-data__card{
+  background: #f9fafb;
+  border-radius: 16px;
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.user-data__header{
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.user-data__subtitle{
+  margin: 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: #9ca3af;
+}
+
+.user-data__heading{
+  margin: 4px 0 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.user-data__edit{
+  border: 1px solid #3E8BBF;
+  background: #fff;
+  color: #3E8BBF;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.user-data__list{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.user-data__item{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.user-data__label{
+  font-size: 15px;
+  letter-spacing: .04em;
+  color: #9ca3af;
+}
+.user-data__label--black {
+  color: #111827;
+  font-weight: 700;
+}
+
+.user-data__value{
+  font-size: 12px;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+/* device list inside step 3 */
+.device-list{ display:flex; flex-direction:column; gap:12px; margin:0; padding:0; list-style:none; }
+.device-card{
+  border:1px solid rgba(17,24,39,0.15);
+  border-radius:12px;
+  padding:10px 14px;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.device-card__info{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.device-card__title{ font-weight:700; font-size:14px; color:#111827; }
+.device-card__meta{ font-size:12px; color:#6b7280; }
+.device-card__remove{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  border:none;
+  background:rgba(17,24,39,0.08);
+  color:#111827;
+  font-size:20px;
+  line-height:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:background 0.2s ease, color 0.2s ease;
+}
+.device-card__remove:hover{
+  background:rgba(17,24,39,0.15);
+}
+.device-card__remove:disabled{
+  opacity:0.5;
+  cursor:default;
+}
+
+.device-add{
+  border:1px dashed rgba(17,24,39,0.25);
+  border-radius:12px;
+  padding:12px;
+  background:#f9fafb;
+  color:#9ca3af;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  width: 100%;            /* на ширину контактной области карточки */
+  box-sizing: border-box; /* учитываем внутренние отступы */
+  text-align: center;     /* на случай переноса текста */
+  margin-top: 12px;
+}
+.device-add.disabled{ opacity:.4; pointer-events:none; }
+
+.step-modal__link{
+  display:inline-block;
+  margin-top:12px;
+  font-size:14px;
+  color:#3E8BBF;
+  text-decoration:underline;
+  background:none;
+  border:0;
+  padding:0;
+  cursor:pointer;
+}
+
+/* success screen */
+.step-success__title{
+  margin:0 0 18px;
+  font-size:18px;
+  font-weight:700;
+  color:#3E8BBF;
+  text-align:center;
+}
+.step-success__text{
+  margin:0 0 24px;
+  font-size:14px;
+  color:#111827;
+  text-align:center;
+  line-height:1.4;
+}
+
+.device-form{ display:flex; flex-direction:column; gap:12px; }
+.device-form__field{ display:flex; flex-direction:column; gap:6px; font-size:14px; color:#111827; }
+.device-form__field > input,
+.device-form__field > select,
+.device-form__field > textarea{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:14px;
+  box-sizing:border-box;
+}
+.device-form__actions{ margin-top:8px; }
+.device-form__actions .btn{ width:100%; }
+
+.layout__main{
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0; /* prevents unexpected min-content sizing */
+}
+.user-data__body{
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.icon-btn__icon {
+  width: 15px;
+  height: 15px;
+}
+.icon-btn__icon--green {
+  filter: invert(55%) sepia(89%) saturate(456%) hue-rotate(78deg) brightness(95%) contrast(90%);
+}
+.icon-btn__icon--red {
+  filter: invert(39%) sepia(95%) saturate(5215%) hue-rotate(339deg) brightness(92%) contrast(95%);
+}
+
+/* --- Passport photo card (Step 2) --- */
+.passport-photo-card{
+  margin-top: 8px;
+  width: 120px;            /* визуально как на макете */
+  height: 150px;
+  border: 1px solid #9ca3af;
+  border-radius: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  position: relative;
+}
+.passport-photo-card__add{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: #6b7280;
+  font-size: 12px;
+  cursor: pointer;
+}
+.passport-photo-card__plus{ width: 22px; height: 22px; opacity: .9; }
+.passport-photo-card__file{ display: none; }
+.passport-photo-card__img{
+  width: 100%; height: 100%; object-fit: cover; border-radius: 12px;
+}
+
+/* выравниваем карточку по сетке Step 2 */
+.step-modal__body .passport-photo-card{ margin-top: 12px; }
+
+/* крестик удаления на превью */
+.passport-photo-card__remove{
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 2;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,.15);
+  background: #fff;
+  color: #111827;
+  display: inline-flex;           /* центрируем символ */
+  align-items: center;            /* по вертикали */
+  justify-content: center;        /* по горизонтали */
+  font-size: 18px;
+  line-height: 1;                 /* без сдвига вниз */
+  text-align: center;
+  cursor: pointer;
+  opacity: .9;
+}
+.passport-photo-card__remove:active{ transform: translateY(1px); }
+
+/* убираем «белую полосу» на страницах с голубым фоном */
+.app-content:has(.page-blue){ 
+  background: var(--auth-bg);   /* фон контейнера делаем таким же голубым */
+}
+.app-content .page-blue{ 
+  min-height: 100%;             /* растягиваем синий блок до высоты контейнера */
+}
+/* --- Utilities & text helpers (moved from inline styles) --- */
+.text-hint{ font-size:12px; color:#6b7280; margin-top:6px; }
+.text-error{ color:#b91c1c; }
+.text-success{ color:#065f46; }
+.info-title{ margin-bottom:12px; }
+.mt-12{ margin-top:12px; }
+
+/* --- Generic spinner --- */
+.spinner{
+  width:20px;height:20px;
+  border:2px solid rgba(0,0,0,.15);
+  border-top-color:#3E8BBF;
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{ to{ transform:rotate(360deg)} }
+
+/* Плитка-заглушка для загрузки фото */
+.photo-tile--loading{
+  display:flex; align-items:center; justify-content:center; position:relative;
+}
+.photo-tile--loading::after{
+  content:""; position:absolute; inset:0; background:rgba(255,255,255,.6);
+}
+
+/* Полноэкранный просмотр фото */
+.photo-viewer{
+  position:fixed; inset:0; background:rgba(0,0,0,.85);
+  display:flex; align-items:center; justify-content:center; z-index:3000;
+}
+.photo-viewer__img{
+  max-width:95vw; max-height:95vh; border-radius:6px; box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+.photo-viewer__close{
+  position:fixed; top:14px; right:14px; width:36px; height:36px; border-radius:50%;
+  background:#fff; border:1px solid rgba(0,0,0,.2);
+  display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer;
+}
+
+/* Devices list spacing (equal gap before add button) */
+ul.device-list{
+  list-style: none;
+  margin: 0 0 12px 0; /* нижний отступ под последней карточкой */
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;          /* расстояние между карточками */
+}
+
+/* Промежуток перед плашкой \"+ Добавить устройство\" такой же, как gap списка */
+.device-add{
+  margin-top: 12px;
+}
+
+.loading-overlay{ position: relative; }
+.loading-overlay::after{
+  content:''; position:absolute; inset:0; background: rgba(255,255,255,.8); backdrop-filter: blur(1px); z-index: 2;
+}
+.loading-overlay .spinner{
+  position:absolute; left:50%; top:50%; transform: translate(-50%,-50%);
+  width: 32px; height: 32px; border: 3px solid #cbd5e1; border-top-color: #62B7FF; border-radius: 50%;
+  animation: spin 0.9s linear infinite; z-index: 3;
+}
+@keyframes spin{ to{ transform: translate(-50%,-50%) rotate(360deg); } }
+
+/* one-line inline loader */
+.inline-loader{ display:inline-block; width:16px; height:16px; vertical-align:middle; margin:2px 0; border:2px solid #cbd5e1; border-top-color: var(--accent); border-radius:50%; animation: spin .8s linear infinite; }
+@keyframes spin{ to{ transform: rotate(360deg); } }
+
+/* Disabled buttons: non-interactive and dimmed */
+.btn[disabled], .btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+  cursor: default;
+  filter: grayscale(0.2);
+}
+
+.text-hint--disabled {
+  cursor: default;
+  color: #9ca3af; /* светло-серый */
+}
+
+.contract-link {
+  text-decoration: underline;
+  color: #111827;
+}
+
+.contract-link:hover {
+  text-decoration: underline;
+}
+
+.contract-loader {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-weight: 400;
+  color: #111827;
+}
+
+.contract-loader__label {
+  letter-spacing: 0.02em;
+  font-weight: 400;
+  text-transform: none;
+}
+
+.contract-loader__dots {
+  min-width: 48px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  color: #1d4ed8;
+  transition: opacity 0.2s ease;
+}

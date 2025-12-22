@@ -1,7 +1,18 @@
 
 
-# Replace api.example.com with your real domain
-api.example.com {
+# Sample mapping for three services. Replace domains/ports as needed.
+
+manager.example.com {
     encode gzip
-    reverse_proxy 127.0.0.1:8000
-}                                                                       
+    reverse_proxy 127.0.0.1:8300
+}
+
+manager-admin.example.com {
+    encode gzip
+    reverse_proxy 127.0.0.1:8200
+}
+
+super.example.com {
+    encode gzip
+    reverse_proxy 127.0.0.1:8100
+}

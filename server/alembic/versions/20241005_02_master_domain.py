@@ -1,7 +1,7 @@
 """master domain schema
 
 Revision ID: 20241005_02
-Revises: 20241005_01_create_master_users.py
+Revises: 20241005_01
 Create Date: 2024-10-05
 """
 
@@ -13,27 +13,39 @@ from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "20241005_02"
-down_revision = "20241005_01_create_master_users.py"
+down_revision = "20241005_01"
 branch_labels = None
 depends_on = None
 
-client_status_enum = sa.Enum(
+client_status_enum = postgresql.ENUM(
     "new",
     "in_verification",
     "awaiting_contract",
     "awaiting_payment",
     "processed",
     name="master_client_status_t",
+    create_type=False,
 )
 
-support_sender_enum = sa.Enum("master", "client", "system", name="support_sender_t")
-invoice_status_enum = sa.Enum("pending", "paid", "canceled", name="invoice_status_t")
+support_sender_enum = postgresql.ENUM("master", "client", "system", name="support_sender_t", create_type=False)
+invoice_status_enum = postgresql.ENUM("pending", "paid", "canceled", name="invoice_status_t", create_type=False)
 
 
 def upgrade() -> None:
-    client_status_enum.create(op.get_bind(), checkfirst=True)
-    support_sender_enum.create(op.get_bind(), checkfirst=True)
-    invoice_status_enum.create(op.get_bind(), checkfirst=True)
+    op.execute("""
+        DO $$
+        BEGIN
+          IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'master_client_status_t') THEN
+            CREATE TYPE master_client_status_t AS ENUM ('new','in_verification','awaiting_contract','awaiting_payment','processed');
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'support_sender_t') THEN
+            CREATE TYPE support_sender_t AS ENUM ('master','client','system');
+          END IF;
+          IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'invoice_status_t') THEN
+            CREATE TYPE invoice_status_t AS ENUM ('pending','paid','canceled');
+          END IF;
+        END$$;
+        """)
 
     op.create_table(
         "master_clients",

@@ -57,6 +57,7 @@ class User(Base):
     email: Mapped[str] = mapped_column(String, unique=True, nullable=True)
     password_hash: Mapped[str] = mapped_column(String, nullable=False)
     name: Mapped[str] = mapped_column(String)
+    address: Mapped[Optional[str]] = mapped_column(String, nullable=True)
     status: Mapped[str] = mapped_column(
         SAEnum(
             'active', 'blocked', 'deleted', 'gost', 'ghost',

@@ -19,7 +19,7 @@ pip install -r requirements.txt
 ## Node окружение
 
 ```
-cd server/frontend-master
+cd server/frontend-manager
 npm install
 ```
 
@@ -27,12 +27,12 @@ npm install
 
 ```
 DATABASE_URL=postgresql+psycopg://user:pass@host:port/db
-MASTER_JWT_SECRET=...
-MASTER_ACCESS_TOKEN_EXPIRE_MINUTES=120
+MANAGER_JWT_SECRET=...
+MANAGER_ACCESS_TOKEN_EXPIRE_MINUTES=120
 S3_ENDPOINT=http://localhost:9000
-S3_ACCESS_KEY=minio
-S3_SECRET_KEY=minio123
-S3_BUCKET=privet-master
+S3_ACCESS_KEY=minioadmin
+S3_SECRET_KEY=minioadmin
+S3_BUCKET=privet-manager
 ```
 
 Дополнительно можно задать `SMTP_*`, `APP_VERSION` и т. п., они прокидываются через `app.core.config.Settings`.
@@ -45,9 +45,9 @@ S3_BUCKET=privet-master
 ## Frontend дев-сервер
 
 ```
-npm run dev --prefix server/frontend-master -- --port 5174
+npm run dev --prefix server/frontend-manager -- --port 5174
 ```
 
 ---
 
-Перед запуском убедитесь, что в БД созданы пользователи и заполнена таблица `master_users`.
+Перед запуском убедитесь, что в БД созданы пользователи и заполнена таблица `manager_users`.

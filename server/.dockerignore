@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtualenvs
+.venv/
+venv/
+
+# VCS
+.git
+.gitignore
+
+# Node artifacts
+frontend-master/node_modules
+
+# Misc
+Dockerfile
+Dockerfile.*
+README.md

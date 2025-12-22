@@ -1,0 +1,9 @@
+[
+  {
+    "AllowedOrigin": ["http://localhost:8200", "http://127.0.0.1:8200"],
+    "AllowedMethod": ["GET", "PUT", "POST", "DELETE"],
+    "AllowedHeader": ["*"],
+    "ExposeHeader": ["ETag","x-amz-request-id","x-amz-version-id"],
+    "MaxAgeSeconds": 3000
+  }
+]

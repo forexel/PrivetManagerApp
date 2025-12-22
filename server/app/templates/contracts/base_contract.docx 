@@ -1,0 +1,35 @@
+# Договор оказания услуг
+## Сторона 1 (Клиент)
+## Паспортные данные
+## Предмет (Устройства)
+## Тариф и расчёт
+
+{{ contract.number }}
+{{ contract.date }}
+
+{{ client.full_name }}
+{{ client.phone }}
+{{ client.email }}
+{{ client.address }}
+
+{{ passport.series }}
+{{ passport.number }}
+{{ passport.issued_by }}
+{{ passport.issue_code }}
+{{ passport.issue_date }}
+{{ passport.registration_address }}
+
+{% if devices %}Устройства:{% else %}Устройства не указаны{% endif %}
+{% for d in devices %}
+- {{ d.device_type }} — {{ d.title }}
+  {% if d.description %}Описание: {{ d.description }}{% endif %}
+  {% if d.specs %}{% for k,v in d.specs.items() %}{{ k }}: {{ v }}{% if not loop.last %}, {% endif %}{% endfor %}{% endif %}
+{% endfor %}
+
+Тариф:
+Количество устройств: {{ tariff.device_count }}
+Доплата за устройство: {{ tariff.extra_per_device }} ₽
+Итого доплата: {{ tariff.total_extra_fee }} ₽
+
+Подписан: {% if contract.signed_at %}да, {{ contract.signed_at }}{% else %}нет{% endif %}
+Ссылка на договор: {{ contract.contract_url }}

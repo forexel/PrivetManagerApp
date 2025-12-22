@@ -12,7 +12,7 @@ from alembic import op  # noqa: F401
 
 # revision identifiers, used by Alembic.
 revision = "35b0_merge_heads"
-down_revision = ("0b445c495839", "35a1d7f0_add_deleted_blocked", "8a1b2c3d4e5f")
+down_revision = ("0b445c495839", "35a1d7f0_add_deleted_blocked")
 branch_labels = None
 depends_on = None
 

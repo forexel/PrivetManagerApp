@@ -1,7 +1,7 @@
 # Структура репозитория
 
 ```
-PrivetMasterApp/
+PrivetManagerApp/
 ├── README.md
 ├── docs/
 │   ├── ARCHITECTURE.md
@@ -10,19 +10,19 @@ PrivetMasterApp/
 ├── server/
 │   ├── app/
 │   │   ├── core/
-│   │   ├── master_api/
+│   │   ├── manager_api/
 │   │   ├── models/
 │   │   └── main.py
 │   ├── alembic/
 │   │   └── versions/
-│   ├── frontend-master/
+│   ├── frontend-manager/
 │   │   ├── src/
 │   │   ├── package.json
 │   │   └── vite.config.ts
 │   ├── requirements.txt
 │   └── pyproject.toml
 └── deploy/
-    └── Caddyfile (пример конфигурации для master.privetsuper.ru)
+    └── Caddyfile (пример конфигурации для manager.privetsuper.ru)
 ```
 
-> Таблицы `users` и `devices` остаются из исходного проекта, новые сущности добавляются в `master_*`.
+> Таблицы `users` и `devices` остаются из исходного проекта, новые сущности добавляются в `manager_*`.
