@@ -173,19 +173,11 @@ export function useApi() {
     async function updatePassportPhoto(clientId: string, blob: Blob, fileName = 'passport.jpg', mimeType = 'image/jpeg') {
       const file_key = await ensureUploadedGetFileKey(blob, fileName, mimeType)
       try { console.debug('[passport photo] saving', { clientId, file_key }) } catch {}
-      let res = await fetch(`/api/manager/clients/${clientId}/passport/photo`, {
-        method: 'PATCH',
+      const res = await fetch(`/api/manager/clients/${clientId}/passport/photo`, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
-        body: JSON.stringify({ file_key, photo_file_key: file_key }),
+        body: JSON.stringify({ file_key }),
       })
-      if (res.status === 405) {
-        // совместимость со старым бэком
-        res = await fetch(`/api/manager/clients/${clientId}/passport/photo`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
-          body: JSON.stringify({ file_key, photo_file_key: file_key }),
-        })
-      }
       if (!res.ok) throw new Error('passport photo update failed')
       return await res.json()
     }
