@@ -440,9 +440,9 @@ def _passport_to_schema(passport) -> PassportRead | None:
     if not passport:
         return None
     schema = PassportRead.model_validate(passport)
-    # If photo_url stores an S3/MinIO key, convert it to a public URL for the UI
+    # Use a presigned URL so private buckets work in the browser.
     schema.photo_url = (
-        storage_service.get_public_url(passport.photo_url)
+        storage_service.generate_presigned_get_url(passport.photo_url)
         if getattr(passport, "photo_url", None)
         else None
     )
