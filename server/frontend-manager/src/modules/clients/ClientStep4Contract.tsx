@@ -302,8 +302,8 @@ const getShortContractLabel = (num?: string, data?: ClientDetail) => {
     }
 
     if (!hasContract) {
-      // договора ещё не было → сразу финальный экран с вводом кода
-      setStepState({ status: 'await_sign' })
+      // договора ещё не было → сразу запускаем генерацию
+      setStepState({ status: 'generate', signature: signatureRef.current })
       return
     }
 
@@ -439,6 +439,9 @@ const getShortContractLabel = (num?: string, data?: ClientDetail) => {
   const handleGenerate = async () => {
     setErrorMsg(null)
     try {
+      if (!hasContract) {
+        await generateMutation.mutateAsync()
+      }
       await requestOtpMutation.mutateAsync()
     } catch (e) {
       setErrorMsg('Не удалось отправить код. Попробуйте ещё раз через минуту.')
@@ -456,7 +459,7 @@ const getShortContractLabel = (num?: string, data?: ClientDetail) => {
   event.preventDefault()
   const sanitized = otp.trim()
   if (!sanitized) {
-    setErrorMsg('Введите код подтверждения из чата «Support».')
+    setErrorMsg('Введите код из приложения клиента из чата "Подписать договор".')
     return
   }
   confirmContractMutation
