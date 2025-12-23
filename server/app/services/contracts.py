@@ -43,8 +43,21 @@ def _render_template(
 
     client_full_name = (client_full_name or "").strip()
 
+    def _device_fee(device: dict) -> float:
+        raw = device.get("extra_fee")
+        try:
+            fee = float(raw)
+        except (TypeError, ValueError):
+            fee = 0.0
+        if fee == 0:
+            try:
+                return float(tariff_snapshot.get("extra_per_device", 0) or 0)
+            except (TypeError, ValueError):
+                return 0.0
+        return fee
+
     devices_block = "\n".join(
-        f"- {device.get('device_type', '').title()} — {device.get('title', '')} (доплата {device.get('extra_fee', 0)} ₽)"
+        f"- {device.get('device_type', '').title()} — {device.get('title', '')} (доплата {_device_fee(device)} ₽)"
         for device in devices
     ) or "- Устройства не указаны"
 
