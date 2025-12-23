@@ -65,11 +65,14 @@ function ClientStep3DeviceDetail() {
   }, [device?.id])
 
   const [saveError, setSaveError] = useState<string | null>(null)
+  const [saveSuccess, setSaveSuccess] = useState<string | null>(null)
+  const [photoError, setPhotoError] = useState<string | null>(null)
 
   const updateMutation = useMutation({
     mutationFn: async (payload: any) => {
       if (!clientId || !deviceId) throw new Error('Missing clientId or deviceId')
       setSaveError(null)
+      setSaveSuccess(null)
       const anyApi = api as any
       dbg('mutationFn start', { clientId, deviceId, payload })
       const fn = anyApi.updateDevice || anyApi.updateClientDevice || anyApi.updateMasterDevice
@@ -82,6 +85,8 @@ function ClientStep3DeviceDetail() {
       dbg('mutation success', res)
       await queryClient.invalidateQueries({ queryKey })
       setEditingKey(null)
+      setSaveSuccess('Сохранено')
+      setTimeout(() => setSaveSuccess(null), 2000)
     },
     onError: (err: any) => {
       const msg = (err?.response?.data?.detail) || err?.message || 'Не удалось сохранить устройство'
@@ -112,6 +117,7 @@ function ClientStep3DeviceDetail() {
     const file = e.target.files?.[0]
     if (!file) return
     setIsUploadingPhoto(true)
+    setPhotoError(null)
     try {
       const resized = await resizeImage(file, 1280)
       const processedFile = new File([resized.blob], resized.fileName || 'device.jpg', { type: resized.mimeType })
@@ -119,6 +125,7 @@ function ClientStep3DeviceDetail() {
       await queryClient.invalidateQueries({ queryKey })
     } catch (err) {
       console.error('device photo upload failed', err)
+      setPhotoError('Не удалось загрузить фото устройства')
       const reader = new FileReader()
       reader.onload = () => setLocalPhotos((prev) => [
         ...prev,
@@ -146,6 +153,13 @@ function ClientStep3DeviceDetail() {
   }
 
   const goBack = () => navigate(`/clients/${clientId}/step/3?tab=${returnTab}`)
+
+  const renderedPhotos = useMemo(() => (
+    [
+      ...devicePhotos.map((p) => ({ ...p, isServer: true })),
+      ...localPhotos.map((p) => ({ ...p, isServer: false })),
+    ]
+  ), [devicePhotos, localPhotos])
 
   if (isLoading) return <p className="clients__placeholder">Загружаем устройство…</p>
   if (isError || !device) {
@@ -369,19 +383,19 @@ function ClientStep3DeviceDetail() {
             </li>
           </ul>
           <div className="device-photos">
-            {device?.photos?.map((p, idx) => (
+            {renderedPhotos.map((p) => (
               <div key={p.id} className="device-photo">
                 <button
                   type="button"
                   className="device-photo__remove"
-                  onClick={() => removePhoto(p.id, devicePhotos.some(dp => dp.id === p.id))}
+                  onClick={() => removePhoto(p.id, p.isServer)}
                   aria-label="Удалить фото"
                 >×</button>
                 <img
-                  src={p.file_url}
+                  src={p.url}
                   alt="Фото устройства"
                   className="device-photo__img"
-                  onClick={() => setViewerUrl(p.file_url)}
+                  onClick={() => setViewerUrl(p.url)}
                 />
               </div>
             ))}
@@ -425,6 +439,16 @@ function ClientStep3DeviceDetail() {
           {saveError && (
             <div className="clients__placeholder text-error" style={{ marginTop: 8 }}>
               {saveError}
+            </div>
+          )}
+          {photoError && (
+            <div className="clients__placeholder text-error" style={{ marginTop: 8 }}>
+              {photoError}
+            </div>
+          )}
+          {saveSuccess && (
+            <div className="clients__placeholder text-success" style={{ marginTop: 8 }}>
+              {saveSuccess}
             </div>
           )}
         </div>

@@ -594,7 +594,7 @@ const getShortContractLabel = (num?: string, data?: ClientDetail) => {
           </form>
 
           <p className="text-hint">
-            Введите код из чата «Support», чтобы подтвердить договор.
+            Введите код из приложения клиента из чата "Подписать договор".
           </p>
         </>
       )

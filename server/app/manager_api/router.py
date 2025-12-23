@@ -183,7 +183,7 @@ def _device_to_schema(device: ManagerDevice) -> DeviceRead:
                 id=photo.id,
                 file_key=photo.file_key,
                 created_at=photo.created_at,
-                file_url=storage_service.get_public_url(photo.file_key),
+                file_url=storage_service.generate_presigned_get_url(photo.file_key),
             )
             for photo in device.photos
         ],
