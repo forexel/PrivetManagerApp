@@ -501,7 +501,7 @@ def _client_to_detail(client: ManagerClient) -> ClientDetail:
         passport=_passport_to_schema(client.passport),
         devices=devices,
         tariff=tariff_schema,
-        contract=ContractRead.model_validate(client.contract) if client.contract else None,
+        contract=contract_schema,
         invoices=invoices_schema,
     )
 
