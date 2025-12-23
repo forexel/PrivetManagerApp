@@ -63,6 +63,7 @@ from app.manager_api.schemas import (
 from app.services.storage import storage_service
 from app.services.contracts import build_contract_pdf
 from app.services.support_bridge import SupportBridgeService
+from app.core.config import settings
 
 import boto3
 
@@ -456,12 +457,16 @@ def _client_to_detail(client: ManagerClient) -> ClientDetail:
         tariff_schema = _tariff_to_schema(client.tariff.tariff, client.tariff)
     contract_schema = None
     if client.contract:
+        contract_url = client.contract.contract_url
+        if contract_url and f"/{settings.S3_BUCKET}/" in contract_url:
+            key = contract_url.split(f"/{settings.S3_BUCKET}/", 1)[-1]
+            contract_url = storage_service.generate_presigned_get_url(key)
         contract_schema = ContractRead(
             otp_code=client.contract.otp_code,
             otp_sent_at=client.contract.otp_sent_at,
             signed_at=client.contract.signed_at,
             payment_confirmed_at=client.contract.payment_confirmed_at,
-            contract_url=client.contract.contract_url,
+            contract_url=contract_url,
             contract_number=client.contract.contract_number,
         )
     invoices = [
