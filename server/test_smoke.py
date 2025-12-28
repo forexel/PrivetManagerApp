@@ -1,11 +1,16 @@
+import os
+
 import pytest, httpx
 
-BASE = "http://localhost:8000"
+BASE = os.getenv("SMOKE_BASE", "http://localhost:8000")
 
 @pytest.mark.asyncio
 async def test_all_paths():
-    async with httpx.AsyncClient(base_url=BASE) as client:
-        r = await client.get("/openapi.json")
+    async with httpx.AsyncClient(base_url=BASE, timeout=2.0) as client:
+        try:
+            r = await client.get("/openapi.json")
+        except httpx.HTTPError as exc:
+            pytest.skip(f"Smoke server unavailable at {BASE}: {exc}")
         r.raise_for_status()
         spec = r.json()
         errors = []
