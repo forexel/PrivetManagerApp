@@ -120,6 +120,9 @@ body{
   height: 100dvh;
 }
 .app--no-nav::after{ display: none; }
+.app--blue .app-content{
+  background: var(--auth-bg);
+}
 
 :root{
   --auth-bg: #3E8BBF;   /* твой новый фон */

@@ -3,7 +3,7 @@
 /* контейнер страницы */
 .dashboard {
   width: 100%;
-  padding: 0 16px;
+  padding: 0;
   box-sizing: border-box;
   padding-top: calc(env(safe-area-inset-top) + 48px);
   padding-bottom: calc(16px + var(--nav-h) + env(safe-area-inset-bottom));
@@ -24,7 +24,7 @@
   width: min(100%, var(--content-max));
   z-index: 900;
   background: #fff;           /* чтобы не просвечивал список под ним */
-  padding: 2px 20px;          /* совпадает с горизонтальными паддингами контейнера */
+  padding: 2px 0;
 }
 
 /* блок с карточками */

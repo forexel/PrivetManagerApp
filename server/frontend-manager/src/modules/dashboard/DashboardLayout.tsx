@@ -5,7 +5,7 @@ function DashboardLayout({ children }: PropsWithChildren) {
   const { pathname } = useLocation()
   const showNav = pathname === '/clients'
   return (
-    <div className={`app${showNav ? '' : ' app--no-nav'}`}>
+    <div className={`app${showNav ? '' : ' app--no-nav app--blue'}`}>
       <div className="app-content">
         <main className="layout__main">{children}</main>
       </div>
