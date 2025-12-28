@@ -1,0 +1,9 @@
+{
+  "appId": "ru.privetsuper.manager",
+  "appName": "PrivetManagerApp",
+  "webDir": "dist",
+  "server": {
+    "url": "https://manager.privetsuper.ru",
+    "cleartext": false
+  }
+}

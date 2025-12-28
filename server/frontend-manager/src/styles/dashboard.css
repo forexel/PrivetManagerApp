@@ -312,7 +312,7 @@
 .client-card__header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
 .client-card__name{ font-weight: 800; color: #111827; }
 .client-card__body, .client-card__footer{ margin-left: 0; }
-.client-card__status { padding: 2px 8px; border-radius: 9999px; font-size: 12px; background: #e5f1ff; color: #1d4ed8; }
+.client-card__status { padding: 2px 8px; border-radius: 9999px; font-size: 12px; background: #e5f1ff; color: #1d4ed8; white-space: nowrap; flex-shrink: 0; }
 .client-card__status--processed { background: #dcfce7; color: #166534; }
 .client-card__status--awaiting_payment { background: #fef3c7; color: #92400e; }
 .client-card__status--awaiting_contract { background: #dbeafe; color: #1d4ed8; }

@@ -1,8 +1,11 @@
 import { PropsWithChildren } from 'react'
+import { useLocation } from 'react-router-dom'
 
 function DashboardLayout({ children }: PropsWithChildren) {
+  const { pathname } = useLocation()
+  const showNav = pathname === '/clients'
   return (
-    <div className="app">
+    <div className={`app${showNav ? '' : ' app--no-nav'}`}>
       <div className="app-content">
         <main className="layout__main">{children}</main>
       </div>

@@ -127,7 +127,7 @@ body{
   --text-dark: #111827;
   --text-light: #ffffff;
   --border: #e5e7eb;
-  --content-max: 320px; 
+  --content-max: min(100%, 430px); 
   --nav-h: 48px;   
   --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
 }
@@ -177,11 +177,6 @@ body{
   color: var(--accent);
   text-align:center;
 }
-
-/* 390–393px (iPhone 12/13/14) — растягиваем колонку */
-@media (min-width: 390px){ :root{ --content-max: 390px; } }
-@media (min-width: 414px){ :root{ --content-max: 414px; } }
-@media (min-width: 430px){ :root{ --content-max: 430px; } }
 
 /* чтобы на браузерах с svh работало идеально */
 @supports (height: 100svh){
