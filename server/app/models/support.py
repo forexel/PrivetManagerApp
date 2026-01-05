@@ -41,5 +41,6 @@ class SupportMessage(Base):
     id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     ticket_id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), ForeignKey("support_tickets.id", ondelete="CASCADE"), index=True, nullable=False)
     author: Mapped[MessageAuthor] = mapped_column(SAEnum(MessageAuthor, name="messageauthor"), nullable=False)
-    body: Mapped[str] = mapped_column(Text, nullable=False)
+    body: Mapped[str | None] = mapped_column(Text, nullable=True)
+    file_key: Mapped[str | None] = mapped_column(String(512), nullable=True)
     ticket: Mapped[SupportTicket] = relationship("SupportTicket", back_populates="messages")

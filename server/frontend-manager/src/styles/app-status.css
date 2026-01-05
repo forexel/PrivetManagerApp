@@ -1,0 +1,9 @@
+.app-status-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+}
+
+.app-status-screen{
+  min-height: 100dvh;
+}

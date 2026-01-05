@@ -1,4 +1,5 @@
 import { clearAccessToken } from './auth'
+import { setAppStatus } from './appStatus'
 const API_BASE = import.meta.env.VITE_API_BASE ?? '/api/manager'
 
 export type LoginResponse = {
@@ -30,17 +31,36 @@ async function parseError(response: Response) {
   }
 }
 
+function buildHttpError(message: string, status: number) {
+  const err = new Error(message) as Error & { status?: number }
+  err.status = status
+  if (status >= 500) {
+    setAppStatus('server')
+  }
+  return err
+}
+
 export async function loginManager(payload: LoginPayload): Promise<LoginResponse> {
-  const response = await fetch(`${API_BASE}/auth/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  })
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+  } catch (error) {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setAppStatus('offline')
+    } else {
+      setAppStatus('server')
+    }
+    throw error
+  }
 
   if (!response.ok) {
-    throw new Error(await parseError(response))
+    throw buildHttpError(await parseError(response), response.status)
   }
 
   return (await response.json()) as LoginResponse
@@ -49,14 +69,24 @@ export async function loginManager(payload: LoginPayload): Promise<LoginResponse
 type FetchOptions = RequestInit & { token: string }
 
 async function authorizedFetch<T>(path: string, { token, ...init }: FetchOptions): Promise<T> {
-  const response = await fetch(`${API_BASE}${path}`, {
-    ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-      ...(init.headers ?? {}),
-    },
-  })
+  let response: Response
+  try {
+    response = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        ...(init.headers ?? {}),
+      },
+    })
+  } catch (error) {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      setAppStatus('offline')
+    } else {
+      setAppStatus('server')
+    }
+    throw error
+  }
 
   if (response.status === 401) {
     clearAccessToken()
@@ -67,7 +97,7 @@ async function authorizedFetch<T>(path: string, { token, ...init }: FetchOptions
   }
 
   if (!response.ok) {
-    throw new Error(await parseError(response))
+    throw buildHttpError(await parseError(response), response.status)
   }
 
   if (response.status === 204) {

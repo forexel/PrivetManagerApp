@@ -34,6 +34,14 @@
 .auth-footer a{ color:#111827; font-weight:600; text-decoration:none; }
 .auth-footer a:hover{ text-decoration:underline; }
 
+.card.auth-card{
+  display: block;
+}
+.card.auth-card .form{
+  display: flex;
+  flex-direction: column;
+}
+
 textarea.input,
 .input.input-area {
   display: block;
@@ -147,11 +155,11 @@ textarea.input, .input.input-area {
 .modal-wrap{
   position: relative;
   width: 100%;
-  max-width: 320px; /* как у .card.auth-card */
+  max-width: var(--popup-width); /* как у .card.auth-card */
   margin: 0 auto;
   padding-top: 44px; /* место под крестик внутри контейнера */
 }
-.modal-wrap.modal-wrap--wide{ max-width: 360px; }
+.modal-wrap.modal-wrap--wide{ max-width: var(--popup-width); }
 .modal-wrap > .close-floating{
   position: absolute;
   top: 0; /* внутри отступа контейнера */

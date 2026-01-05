@@ -62,6 +62,9 @@ html, body, #root {
   height: 100%; 
   background: #fff;
 }
+body.body--blue, body.body--blue #root {
+  background: var(--auth-bg);
+}
 body { 
   margin: 0;    
   min-height: 100dvh; 
@@ -123,6 +126,9 @@ body{
 .app--blue .app-content{
   background: var(--auth-bg);
 }
+.app--blue{
+  background: var(--auth-bg);
+}
 
 :root{
   --auth-bg: #3E8BBF;   /* твой новый фон */
@@ -133,6 +139,9 @@ body{
   --content-max: min(100%, 430px); 
   --nav-h: 48px;   
   --font-ui: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  --popup-width: 320px;
+  --popup-height: min(520px, calc(100dvh - 160px));
+  --popup-radius: 22px;
 }
 
 .page-blue{
@@ -163,13 +172,17 @@ body{
 /* белая «карточка» формы */
 .card.auth-card{
   width:100%;
-  max-width:320px;          /* «мобильная» ширина */
+  max-width:var(--popup-width);          /* «мобильная» ширина */
   background:#ffffff;
-  border-radius:24px;
+  border-radius:var(--popup-radius);
   box-shadow:0 18px 40px rgba(0,0,0,.15);
   padding:16px 12px;        /* ещё компактнее */
   margin: 4px 6px 0;        /* подняли карточку ближе к заголовку */
   box-sizing:border-box;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
 }
 
 /* голубой заголовок внутри карточки */
@@ -303,15 +316,17 @@ textarea.input--inline:focus-visible{ outline: none; box-shadow: none; border-co
 
 .step-modal{
   width: 100%;
-  max-width: 320px;
+  max-width: var(--popup-width);
   background: #fff;
-  border-radius: 22px;
+  border-radius: var(--popup-radius);
   padding: 16px;
   box-sizing: border-box;
-  box-shadow: 0 18px 36px rgba(0,0,0,.14);
+  box-shadow: 0 8px 18px rgba(0,0,0,.08);
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 56px);
+  height: var(--popup-height);
+  min-height: var(--popup-height);
+  max-height: var(--popup-height);
 }
 
 .step-modal__header{

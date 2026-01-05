@@ -3,6 +3,7 @@ services:
     build:
       context: ../server
       dockerfile: Dockerfile
+    image: apps-privet_manager_api
     container_name: apps-privet_manager_api
     env_file:
       - ./.env
@@ -15,6 +16,7 @@ services:
     build:
       context: ../server
       dockerfile: Dockerfile
+    image: apps-privet_manager_api
     container_name: apps-privet_manager_migrator
     env_file:
       - ./.env

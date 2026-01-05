@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">PrivetManagerApp</string>
-    <string name="title_activity_main">PrivetManagerApp</string>
+    <string name="app_name">Привет Менеджер</string>
+    <string name="title_activity_main">Привет Менеджер</string>
     <string name="package_name">ru.privetsuper.manager</string>
     <string name="custom_url_scheme">ru.privetsuper.manager</string>
 </resources>

@@ -2,9 +2,19 @@
 import { useMemo } from 'react'
 import { useAuth } from './auth-context'
 import { createApiClient } from './api-client'
+import { setAppStatus } from './appStatus'
 
 function authHeaders(token: string | null) {
   return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+function buildHttpError(message: string, status: number) {
+  const err = new Error(message) as Error & { status?: number }
+  err.status = status
+  if (status >= 500) {
+    setAppStatus('server')
+  }
+  return err
 }
 
 export function useApi() {
@@ -31,7 +41,7 @@ export function useApi() {
         })
       }
 
-      if (!res.ok) throw new Error('presigned request failed')
+      if (!res.ok) throw buildHttpError('presigned request failed', res.status)
 
       const raw = await res.json() as any
       try { console.debug('[presigned url]', raw?.url, raw) } catch {}
@@ -87,7 +97,7 @@ export function useApi() {
         let text = ''
         try { text = await up.text() } catch {}
         try { console.error('[presigned upload error]', up.status, text) } catch {}
-        throw new Error('upload to presigned failed')
+        throw buildHttpError('upload to presigned failed', up.status)
       }
       try { console.debug('[presigned upload OK]', uploadUrl) } catch {}
     }
@@ -101,7 +111,7 @@ export function useApi() {
         headers: { ...authHeaders(token) },
         body: fd,
       })
-      if (!res.ok) throw new Error('direct upload failed')
+      if (!res.ok) throw buildHttpError('direct upload failed', res.status)
       const j = await res.json() as any
       if (!j?.file_key) throw new Error('direct upload: missing file_key')
       return j as { file_key: string; url?: string }
@@ -133,7 +143,7 @@ export function useApi() {
         headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
         body: JSON.stringify({ file_key, photo_file_key: file_key }),
       })
-      if (!res.ok) throw new Error('save device photo failed')
+      if (!res.ok) throw buildHttpError('save device photo failed', res.status)
       return await res.json()
     }
 
@@ -142,7 +152,7 @@ export function useApi() {
         method: 'DELETE',
         headers: { ...authHeaders(token) },
       })
-      if (!res.ok) throw new Error('delete device photo failed')
+      if (!res.ok) throw buildHttpError('delete device photo failed', res.status)
     }
 
     // --- Devices: delete with POST fallback ---
@@ -165,7 +175,7 @@ export function useApi() {
       if (!res.ok && res.status !== 204) {
         let detail = '';
         try { detail = (await res.json())?.detail || '' } catch {}
-        throw new Error(detail || 'deleteDevice failed');
+        throw buildHttpError(detail || 'deleteDevice failed', res.status);
       }
     }
 
@@ -178,7 +188,7 @@ export function useApi() {
         headers: { 'Content-Type': 'application/json', ...authHeaders(token) },
         body: JSON.stringify({ file_key }),
       })
-      if (!res.ok) throw new Error('passport photo update failed')
+      if (!res.ok) throw buildHttpError('passport photo update failed', res.status)
       return await res.json()
     }
 
@@ -194,7 +204,7 @@ export function useApi() {
         try {
           detail = (await res.json())?.detail || '';
         } catch {}
-        throw new Error(detail || 'createDevice failed');
+        throw buildHttpError(detail || 'createDevice failed', res.status);
       }
       return await res.json();
     }
@@ -208,7 +218,7 @@ export function useApi() {
       if (!res.ok) {
         let detail = ''
         try { detail = (await res.json())?.detail || '' } catch {}
-        throw new Error(detail || 'updateDevice failed')
+        throw buildHttpError(detail || 'updateDevice failed', res.status)
       }
       return await res.json()
     }
@@ -225,7 +235,7 @@ export function useApi() {
       if (!res.ok) {
         let detail = ''
         try { detail = (await res.json())?.detail || '' } catch {}
-        throw new Error(detail || 'updateProfile failed')
+        throw buildHttpError(detail || 'updateProfile failed', res.status)
       }
       return await res.json()
     }
@@ -254,7 +264,7 @@ export function useApi() {
       if (!res.ok) {
         let detail = ''
         try { detail = (await res.json())?.detail || '' } catch {}
-        throw new Error(detail || 'upsertPassport failed')
+        throw buildHttpError(detail || 'upsertPassport failed', res.status)
       }
       return await res.json()
     }
@@ -264,7 +274,7 @@ export function useApi() {
         method: 'POST',
         headers: { ...authHeaders(token) },
       })
-      if (!res.ok) throw new Error('generateContract failed')
+      if (!res.ok) throw buildHttpError('generateContract failed', res.status)
       return await res.json()
     }
 
@@ -285,7 +295,7 @@ export function useApi() {
       if (!res.ok) {
         let detail = ''
         try { detail = (await res.json())?.detail || '' } catch {}
-        throw new Error(detail || 'requestContractOtp failed')
+        throw buildHttpError(detail || 'requestContractOtp failed', res.status)
       }
       return await res.json()
     }
@@ -299,7 +309,7 @@ export function useApi() {
       if (!res.ok) {
         let detail = ''
         try { detail = (await res.json())?.detail || '' } catch {}
-        const err: any = new Error(detail || 'confirmContract failed')
+        const err: any = buildHttpError(detail || 'confirmContract failed', res.status)
         ;(err as any).response = { data: { detail } } // чтобы onError мог красиво показать
         throw err
       }
@@ -321,7 +331,7 @@ export function useApi() {
       if (!res.ok) {
         let detail = ''
         try { detail = (await res.json())?.detail || '' } catch {}
-        throw new Error(detail || 'createInvoice failed')
+        throw buildHttpError(detail || 'createInvoice failed', res.status)
       }
       return await res.json().catch(() => ({}))
     }
